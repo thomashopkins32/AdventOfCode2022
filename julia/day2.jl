@@ -1,5 +1,3 @@
-using DelimitedFiles
-
 strat_map1 = Dict("A X" => 1 + 3,
                  "A Y" => 2 + 6,
                  "A Z" => 3 + 0,
