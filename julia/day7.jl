@@ -5,8 +5,7 @@ mutable struct Directory
     total_size::Int
 end
 
-function solution1()
-    lines = strip.(readlines("../files/input7.txt"))
+function get_dir_sizes(lines)
     root = Directory("/", [], nothing, 0)
     curr_dir = root
     for (i, l) in enumerate(lines[2:end])
@@ -41,16 +40,23 @@ function solution1()
         end
     end
 
-    # fix for the end
-    curr_dir.parent.total_size += curr_dir.total_size
+    # fix for the end up until the root
+    while curr_dir.parent != nothing
+        curr_dir.parent.total_size += curr_dir.total_size
+        curr_dir = curr_dir.parent
+    end
+    return root
+end
+function solution1()
+    lines = strip.(readlines("../files/input7.txt"))
 
+    root = get_dir_sizes(lines)
 
     all_under = []
     queue = [root]
     while length(queue) != 0
         curr = pop!(queue)
         append!(queue, curr.subdirs)
-        println("$(curr.name) : $(curr.total_size)")
         if curr.total_size <= 100_000
             push!(all_under, curr.total_size)
         end
@@ -59,7 +65,25 @@ function solution1()
 end
 
 
+function solution2()
+    lines = strip.(readlines("../files/input7.txt"))
+    root = get_dir_sizes(lines) 
 
-    
-    
-    
+    all_sizes = []
+    queue = [root]
+    while length(queue) != 0
+        curr = pop!(queue)
+        append!(queue, curr.subdirs)
+        push!(all_sizes, curr.total_size)
+    end
+    total_used = root.total_size
+    println(total_used)
+    total_available = 70_000_000
+    total_free = total_available - total_used
+    println(total_free)
+    total_needed = 30_000_000 - total_free 
+    println(total_needed)
+    sort!(all_sizes)
+    println(all_sizes)
+    return all_sizes[all_sizes .> total_needed][1]
+end
